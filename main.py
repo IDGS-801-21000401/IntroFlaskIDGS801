@@ -1,4 +1,4 @@
-from flask import Flask,render_template
+from flask import Flask,render_template,request
 
 app=Flask(__name__)
 
@@ -60,6 +60,36 @@ def default(d="user-not:default"):
             """
 
 
+@app.route("/calcular",methods=["GET","POST"])
+def calcular():
+    if request.method == "POST":
+        num1 = request.form.get("n1")
+        num2 = request.form.get("n2")
+        return "La multiplicación de {} y {} = {}".format(num1, num2, str(int(num1)* int(num2)))
+    else:
+        return '''
+            <form action="/calcular" method="POST">
+
+                <label>Numero 1: </label>
+                <input type="text" name="n1"><br>
+                
+                <label>Numero 2: </label>
+                <input type="text" name="n2"><br>
+                <input type="submit">
+            </form>
+        '''
+
+@app.route("/OperasBas",methods=["GET","POST"])
+def operaBas():
+    return render_template("OperasBas.html")
+
+@app.route("/resultado",methods=["GET","POST"])
+def result():
+    if request.method == "POST":
+        num1 = request.form.get("n1")
+        num2 = request.form.get("n2")
+        return "La multiplicación de {} y {} = {}".format(num1, num2, str(int(num1)* int(num2)))
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
