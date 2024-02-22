@@ -1,8 +1,23 @@
-from flask import Flask,render_template,request
+from flask import Flask,render_template,request,flash,g
 from forms import UserForm
+from flask_wtf.csrf import CSRFProtect
 
 app=Flask(__name__)
+app.secret_key = 'esta es mi clave secreta'
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"),404
+
+@app.before_request
+def before_request():
+    g.nombre = 'Mario'
+    print("before 1")
+
+@app.after_request
+def after_request(response):
+    print("after 3")
+    return response
 
 @app.route("/")
 def index():
@@ -10,18 +25,23 @@ def index():
 
 @app.route("/alumnos",methods=["GET","POST"])
 def alumnos():
+    print("ALUMNO: {}".format(g.nombre))
     alumno_clase = UserForm(request.form)
     nombre = ""
     apaterno = ""
     amaterno = ""
     edad = ""
     email = ""
+    mensaje = ""
     if request.method == "POST" and alumno_clase.validate():
         nombre = alumno_clase.nombre.data
         apaterno = alumno_clase.apaterno.data
         amaterno = alumno_clase.amaterno.data
         edad = alumno_clase.edad.data
         email = alumno_clase.email.data
+
+        mensaje = "Bienvenido, {}".format(nombre + " " + amaterno)
+        flash(mensaje)
     return render_template("alumnos2.html",form=alumno_clase,nombre=nombre,apaterno=apaterno,amaterno=amaterno,edad=edad,email=email)
 
 @app.route("/maestros")
